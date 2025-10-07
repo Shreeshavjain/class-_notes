@@ -178,8 +178,7 @@ def rename_subject(old_name):
     return render_template("admin_manage_subjects.html", edit_name=old_name, site_name="Class Notes Hub")
 
 # ---------- run ----------
-if __name__ == "__main__":
-    app.run(debug=True)
+# ---------- run ----------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port,debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)
