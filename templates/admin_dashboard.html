@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin - {{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Admin - {{ site_name }}</h1>
+    <nav>
+      <a class="btn small" href="{{ url_for('add_subject') }}">Add Subject</a>
+      <a class="btn small" href="{{ url_for('admin_upload') }}">Upload Note</a>
+      <a class="btn small" href="{{ url_for('index') }}">View Site</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Manage Subjects</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if subjects %}
+      <table class="subjects-table">
+        <thead><tr><th>Subject</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for s in subjects %}
+            <tr>
+              <td>{{ s }}</td>
+              <td>
+                <form method="post" action="{{ url_for('delete_subject', subject=s) }}" style="display:inline">
+                  <button class="btn outline small" onclick="return confirm('Delete subject & its files?');">Delete</button>
+                </form>
+                <a class="btn small" href="{{ url_for('rename_subject', old_name=s) }}">Rename</a>
+                <a class="btn small" href="{{ url_for('subject_page', subject_name=s) }}">Open</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No subjects yet.</p>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <small>Class Notes Hub</small>
+  </footer>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+<input type="file" id="fileInput" onchange="previewFile('fileInput', 'fileLabel')">
+<label id="fileLabel">Choose file...</label>
+<form method="POST" onsubmit="return confirmDelete('{{ subject_name }}')">
+
+</body>
+</html>

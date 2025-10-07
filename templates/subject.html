@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ subject }} - {{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <h1><a href="{{ url_for('index') }}">{{ site_name }}</a></h1>
+  </header>
+
+  <main class="container">
+    <h2>{{ subject }}</h2>
+
+    {% if files %}
+      <div class="files-list">
+        {% for f in files %}
+          <div class="file-card">
+            <div class="file-info">
+              <strong>{{ f.name }}</strong>
+              <div class="file-actions">
+                {% if f.ext == "pdf" %}
+                  <a class="btn" href="{{ f.url }}" target="_blank">View</a>
+                {% else %}
+                  <a class="btn" href="{{ f.url }}" target="_blank">Open</a>
+                {% endif %}
+                <a class="btn outline" href="{{ url_for('download_file', subject=subject, filename=f.name) }}">Download</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No notes uploaded yet for this subject.</p>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <small>Class Notes Hub</small>
+  </footer>
+</body>
+</html>

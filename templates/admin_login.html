@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Login - {{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container narrow">
+    <h2>Admin Login</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+          {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label>Username</label>
+      <input name="username" required>
+      <label>Password</label>
+      <input name="password" type="password" required>
+      <button class="btn" type="submit">Login</button>
+    </form>
+
+    <p style="margin-top:1rem"><a href="{{ url_for('index') }}">Back to home</a></p>
+  </main>
+</body>
+</html>

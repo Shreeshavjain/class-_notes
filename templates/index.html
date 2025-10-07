@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Quick inline styles for header/subheading */
+    .site-header {
+      text-align: center;
+      padding: 20px 0;
+      background-color: #f8f9fa;
+    }
+    .site-header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    .site-header h2 {
+      margin: 5px 0 15px 0;
+      font-weight: normal;
+      font-size: 1.2em;
+      color: #555;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .card {
+      display: block;
+      width: 200px;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background-color: #fff;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .card-body {
+      padding: 15px;
+      text-align: center;
+    }
+    .card-body h3 {
+      margin: 0 0 10px 0;
+    }
+    .site-footer {
+      text-align: center;
+      padding: 15px 0;
+      background-color: #f8f9fa;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #777;
+    }
+    /* Mobile responsiveness */
+    @media(max-width: 600px){
+      .card {
+        width: 100%;
+      }
+    }
+    .btn.small {
+      padding: 5px 10px;
+      font-size: 0.9em;
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+    .btn.small:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <h1>{{ site_name }}</h1>
+    <h2>NITTE AIML</h2> <!-- Sub-heading -->
+    <nav>
+      <a href="{{ url_for('admin_login') }}" class="btn small">Admin</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Subjects</h2>
+    {% if subjects %}
+      <div class="grid">
+        {% for s in subjects %}
+          <a class="card" href="{{ url_for('subject_page', subject_name=s) }}">
+            <div class="card-body">
+              <h3>{{ s }}</h3>
+              <p>Open notes &rarr;</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No subjects yet. Admin can add subjects from the admin panel.</p>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <small>NMAMIT</small>
+     <small>2025</small>
+  </footer>
+</body>
+</html>

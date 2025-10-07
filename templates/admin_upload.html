@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Upload Note - {{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Upload Note</h1>
+    <nav><a class="btn small" href="{{ url_for('admin_dashboard') }}">Dashboard</a></nav>
+  </header>
+
+  <main class="container narrow">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+      <label>Subject</label>
+      <select name="subject" required>
+        <option value="">-- Select subject --</option>
+        {% for s in subjects %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+
+      <label>File (PDF / PPT / PPTX)</label>
+      <input type="file" name="file" accept=".pdf,.ppt,.pptx" required>
+
+      <button class="btn" type="submit">Upload</button>
+    </form>
+  </main>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+<input type="file" id="fileInput" onchange="previewFile('fileInput', 'fileLabel')">
+<label id="fileLabel">Choose file...</label>
+<form method="POST" onsubmit="return confirmDelete('{{ subject_name }}')">
+
+</body>
+</html>

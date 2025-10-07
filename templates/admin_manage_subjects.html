@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rename Subject - {{ site_name }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container narrow">
+    <h2>Rename Subject</h2>
+    <form method="post" action="{{ url_for('rename_subject', old_name=edit_name) }}">
+      <label>Old Name</label>
+      <input value="{{ edit_name }}" disabled>
+      <label>New Name</label>
+      <input name="new_name" required>
+      <button class="btn" type="submit">Rename</button>
+    </form>
+    <p style="margin-top:1rem"><a href="{{ url_for('admin_dashboard') }}">Back to dashboard</a></p>
+  </main>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+  <input type="file" id="fileInput" onchange="previewFile('fileInput', 'fileLabel')">
+<label id="fileLabel">Choose file...</label>
+<form method="POST" onsubmit="return confirmDelete('{{ subject_name }}')">
+
+</body>
+</html>
