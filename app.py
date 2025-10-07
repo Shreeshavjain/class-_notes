@@ -35,8 +35,11 @@ app = Flask(__name__)
 app.secret_key = "change_this_secret"  # change before deploying
 
 # --- Admin credentials (change before deploying) ---
-ADMIN_USERNAME = "shreesha v jain"
-ADMIN_PASSWORD = "9880037254"
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret")  # fallback only if env var missing
+
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "shreesha v jain")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "9880037254")
+
 # ---------------------------------------------------
 
 # ---------- Routes ----------
