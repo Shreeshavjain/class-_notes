@@ -37,9 +37,5 @@
     </form>
   </main>
   <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-<input type="file" id="fileInput" onchange="previewFile('fileInput', 'fileLabel')">
-<label id="fileLabel">Choose file...</label>
-<form method="POST" onsubmit="return confirmDelete('{{ subject_name }}')">
-
 </body>
 </html>

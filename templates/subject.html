@@ -27,6 +27,11 @@
                   <a class="btn" href="{{ f.url }}" target="_blank">Open</a>
                 {% endif %}
                 <a class="btn outline" href="{{ url_for('download_file', subject=subject, filename=f.name) }}">Download</a>
+                {% if is_admin %}
+                <form action="{{ url_for('delete_file', subject=subject, filename=f.name) }}" method="post" style="display:inline;" onsubmit="return confirmDelete('{{ f.name }}');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -40,5 +45,6 @@
   <footer class="site-footer">
     <small>Class Notes Hub</small>
   </footer>
+  <script src="{{ url_for('static', filename='scripts.js') }}"></script>
 </body>
 </html>

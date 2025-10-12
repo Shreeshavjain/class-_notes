@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, abort, session
 from werkzeug.utils import secure_filename
 from pathlib import Path
 
@@ -32,15 +32,10 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
 app = Flask(__name__)
-app.secret_key = "change_this_secret"  # change before deploying
-
-# --- Admin credentials (change before deploying) ---
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "default_secret")  # fallback only if env var missing
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "shreesha v jain")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "9880037254")
-
-# ---------------------------------------------------
 
 # ---------- Routes ----------
 
@@ -59,7 +54,8 @@ def subject_page(subject_name):
         for f in sorted(folder.iterdir(), key=lambda p: p.name.lower()):
             if f.is_file():
                 files.append({"name": f.name, "url": f"/uploads/{safe_name}/{f.name}", "ext": f.suffix.lower().lstrip(".")})
-    return render_template("subject.html", subject=subject_name, files=files, site_name="Class Notes Hub")
+    is_admin = session.get('is_admin', False)
+    return render_template("subject.html", subject=subject_name, files=files, site_name="Class Notes", is_admin=is_admin)
 
 @app.route("/uploads/<subject>/<filename>")
 def uploaded_file(subject, filename):
@@ -69,8 +65,7 @@ def uploaded_file(subject, filename):
 def download_file(subject, filename):
     return send_from_directory(UPLOAD_DIR / secure_filename(subject), filename, as_attachment=True)
 
-# ---------- Admin: simple session (very simple; no DB/session used) ----------
-# In a production app use Flask-Login and hashed passwords.
+# ---------- Admin: session-based login ----------
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -78,20 +73,30 @@ def admin_login():
         username = request.form.get("username", "")
         password = request.form.get("password", "")
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            # very simple login: mark via query param; in production, use sessions
+            session['is_admin'] = True
             return redirect(url_for("admin_dashboard"))
         else:
-            flash("Invalid username or password", "danger")
+            flash("Invalid credentials", "danger")
     return render_template("admin_login.html", site_name="Class Notes Hub")
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.pop('is_admin', None)
+    flash("Logged out.", "info")
+    return redirect(url_for("admin_login"))
 
 @app.route("/admin")
 def admin_dashboard():
+    if not session.get('is_admin'):
+        return redirect(url_for("admin_login"))
     data = load_data()
     subjects = data.get("subjects", [])
     return render_template("admin_dashboard.html", subjects=subjects, site_name="Class Notes Hub")
 
 @app.route("/admin/add_subject", methods=["GET", "POST"])
 def add_subject():
+    if not session.get('is_admin'):
+        return redirect(url_for("admin_login"))
     if request.method == "POST":
         name = request.form.get("subject_name", "").strip()
         if not name:
@@ -111,6 +116,8 @@ def add_subject():
 
 @app.route("/admin/delete_subject/<subject>", methods=["POST"])
 def delete_subject(subject):
+    if not session.get('is_admin'):
+        return redirect(url_for("admin_login"))
     data = load_data()
     if subject in data["subjects"]:
         data["subjects"].remove(subject)
@@ -127,6 +134,8 @@ def delete_subject(subject):
 
 @app.route("/admin/upload", methods=["GET", "POST"])
 def admin_upload():
+    if not session.get('is_admin'):
+        return redirect(url_for("admin_login"))
     data = load_data()
     subjects = data.get("subjects", [])
     if request.method == "POST":
@@ -152,6 +161,8 @@ def admin_upload():
 
 @app.route("/admin/rename_subject/<old_name>", methods=["GET","POST"])
 def rename_subject(old_name):
+    if not session.get('is_admin'):
+        return redirect(url_for("admin_login"))
     if request.method == "POST":
         new_name = request.form.get("new_name", "").strip()
         if not new_name:
@@ -177,8 +188,20 @@ def rename_subject(old_name):
     # GET -> show a simple form
     return render_template("admin_manage_subjects.html", edit_name=old_name, site_name="Class Notes Hub")
 
-# ---------- run ----------
+@app.route("/admin/delete_file/<subject>/<filename>", methods=["POST"])
+def delete_file(subject, filename):
+    if not session.get('is_admin'):
+        abort(403)
+    folder = UPLOAD_DIR / secure_filename(subject)
+    file_path = folder / filename
+    if file_path.exists() and file_path.is_file():
+        file_path.unlink()
+        flash(f"Deleted file '{filename}' from '{subject}'", "info")
+    else:
+        flash("File not found", "warning")
+    return redirect(url_for("subject_page", subject_name=subject))
+
 # ---------- run ----------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False) 
