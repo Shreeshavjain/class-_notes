@@ -72,6 +72,8 @@ def admin_login():
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
+        # Uncomment the next line for debugging credentials in logs
+        # print("DEBUG:", username, password, ADMIN_USERNAME, ADMIN_PASSWORD)
         if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session['is_admin'] = True
             return redirect(url_for("admin_dashboard"))
@@ -204,4 +206,4 @@ def delete_file(subject, filename):
 # ---------- run ----------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False) 
+    app.run(host="0.0.0.0", port=port, debug=False)
